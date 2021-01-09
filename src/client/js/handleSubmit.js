@@ -1,4 +1,3 @@
-import { isURLValid } from "./formValidation";
 import { spinner_OFF, spinner_ON } from "./handleSpinner";
 import { triggerAlert } from "./handleAlert";
 

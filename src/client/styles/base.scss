@@ -11,7 +11,18 @@ body {
 }
 
 #form {
-  flex-direction: column;
+  label {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+@media (min-width: 768px) {
+  #form {
+    label {
+      text-align: right;
+    }
+  }
 }
 
 .jumbotron {
@@ -29,5 +40,11 @@ body {
 
 #alert {
   display: none;
+  margin-top: 5%;
+}
+
+.submit-btn-row {
+  justify-content: center;
+  align-items: center;
   margin-top: 5%;
 }

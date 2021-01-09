@@ -17,8 +17,8 @@
 <body>
     <header>
         <div class="container">
-            <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-                <a class="navbar-brand" href="#">S.A. Generator</a>
+            <nav class="navbar navbar-dark bg-secondary navbar-expand-lg">
+                <a class="navbar-brand" href="#">Travel App</a>
             </nav>
             <div class="alert alert-danger" role="alert" id="alert"></div>
         </div>
@@ -27,42 +27,33 @@
     <main>
         <div class="container">
 
-            <div class="jumbotron">
-                <h1>Find out what the world is feeling ...</h1>
-
+            <div class="jumbotron bg-light">
                 <form id="form">
-                    <div class="form-group">
-                        <label for="url-input">URL</label>
-                        <input type="text" class="form-control" id="url-input">
-                        <small id="emailHelp" class="form-text text-muted">Provide a URL of an article or blog
-                            post.</small>
+                    <div class="form-group row">
+                        <label for="city-input" class="col-md-3 col-sm-12 col-form-label">My trip to:</label>
+
+                        <div class="col-md-6 col-sm-12">
+                            <input type="text" class="form-control" id="city-input"
+                                placeholder="City Destination (e.g. Paris)">
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" id="submit-btn">
-                        <span id="submit-spinner" class="spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Get Sentiment Analysis</button>
+                    <div class="form-group row">
+                        <label for="departure-input" class="col-md-3 col-sm-12 col-form-label">Departing:</label>
+                        <div class="col-md-6 col-sm-12">
+                            <input type="text" class="form-control" id="departure-input" placeholder="mm/dd/yyyy">
+                        </div>
+                    </div>
+
+                    <div class="row submit-btn-row">
+                        <button type="submit" class="btn btn-secondary" id="submit-btn">
+                            <span id="submit-spinner" class="spinner-border-sm" role="status" aria-hidden="true"></span>
+                            save trip</button>
+                    </div>
                 </form>
             </div>
-
-            <section id="sentiment-results">
-                <div class="row">
-                    <div class="col">
-                        <h3>Article / Blog Overall Sentiment: <strong id="overall-sentiment"></strong> <i class="fas"
-                                id="sentiment-emoji"></i>
-                        </h3>
-                    </div>
-
-                    <canvas id="sentiment-chart"></canvas>
-                </div>
-            </section>
         </div>
     </main>
-
-    <div class="container">
-        <footer class="footer bg-dark text-white">
-            <p>Project 5 - Webpack NLP - Sentiment Analysis Generator</p>
-        </footer>
-    </div>
 
     <!-- bootstrap, chart.js cdn scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -74,7 +65,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <!-- service worker -->
-    <script>
+    <!-- <script>
         // Check that service workers are supported
         if ('serviceWorker' in navigator) {
             // Use the window load event to keep the page load performant
@@ -82,7 +73,7 @@
                 navigator.serviceWorker.register('/service-worker.js');
             });
         }
-    </script>
+    </script> -->
 </body>
 
 </html>
