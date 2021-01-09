@@ -54,20 +54,45 @@ async function getTripInfo(request, response) {
       }
     );
     const pixabay_results = await pixabay_raw.json();
-    const { hits } = pixabay_results;
-    const primary_pixabay_hit = hits[0];
+    const { totalHits, hits: cityHits } = pixabay_results;
+    let pixabay_image_result = null;
+
+    // EXTENDED PROJECT: If no images come back on pixabay query for "city" user search, redo query on countryName from geonames lookup.
+    // TEST CASE: Oymyakon, Russia. (remote city in Russia Siberia)
+    if (totalHits === 0) {
+      try {
+        const pixabay_raw_countryName = await fetch(
+          `${process.env.PIXABAY_API_URL}?q=${countryName}&image_type=photo&editors_choice=true&key=${process.env.PIXABAY_API_KEY}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const pixabay_results_countryName = await pixabay_raw_countryName.json();
+        const { hits: countryHits } = pixabay_results_countryName;
+        pixabay_image_result = countryHits[1];
+      } catch (error) {
+        // response.send({ msg: "error on pixabay get" });
+      }
+    } else {
+      pixabay_image_result = cityHits[0];
+    }
 
     // 4. send custom response object back to user.
     const custom_response_object = {
       toponymName,
       countryName,
       // forecast,
-      cityImageURL: primary_pixabay_hit.webformatURL,
+      tripImage: pixabay_image_result.webformatURL,
     };
 
     response.send(custom_response_object);
-  } catch (error) {
-    response.send({ msg: "server error", error });
+  } catch (err) {
+    console.log("err", err);
+    response.send({ msg: "server error", err });
   }
 }
 
