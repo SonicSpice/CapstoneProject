@@ -3,78 +3,76 @@ const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static("website"));
+app.use(express.static("dist"));
+
+app.get("/", function (req, res) {
+  res.sendFile(path.resolve("dist/index.html"));
+});
 
 // designates what port the app will listen to for incoming requests
 app.listen(process.env.SERVER_PORT, function () {
   console.log(
-    `Shawn's Meaning Cloud server is listening on port ${process.env.SERVER_PORT}!`
+    `Shawn's Travel App server is listening on port ${process.env.SERVER_PORT}!`
   );
 });
 
-// generates sentiment analysis on a valid URL
-app.post("/sentiment-analysis", analyzeURL);
-function analyzeURL(request, response) {
-  fetch(
-    `${process.env.MEANING_CLOUD_SENTIMENT_ANALYSIS_ENDPOINT}?key=${process.env.MEANING_CLOUD_API_KEY}&lang=en&url=${request.body.url}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((res) => res.json())
-    .then((analysis) => {
-      /**
-       * response object:
-       * {
-       *    overall_sentiment: string,
-       *    sentiment_breakdown: {
-       *      "P+": number,
-       *       "P": number,
-       *       "NEU": number,
-       *        ... etc ...
-       *    }
-       * }
-       */
-      const sentiment_response = {
-        overall_sentiment: analysis.score_tag,
-        sentiment_breakdown: {
-          "P+": 0,
-          P: 0,
-          NEU: 0,
-          N: 0,
-          "N+": 0,
-          NONE: 0,
-          "Dog*4%": "milo",
+app.post("/trip-info-lookup", getTripInfo);
+async function getTripInfo(request, response) {
+  try {
+    // 1. get coordinate data for user request from geonames
+    const geonames_raw = await fetch(
+      `${process.env.GEONAMES_API_URL}?q=${request.body.city}&maxRows=1&username=${process.env.GEONAMES_USERID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      };
+      }
+    );
+    const geonames_results = await geonames_raw.json();
+    const { geonames } = geonames_results;
+    const main_result = geonames[0];
+    const { countryName, lat, lng, toponymName } = main_result;
 
-      // possible score_tags (sentiments) found in article/blog sentences
-      // P+: strong positive
-      // P: positive
-      // NEU: neutral
-      // N: negative
-      // N+: strong negative
-      // NONE: without sentiment
-      const sentiments = ["P+", "P", "NEU", "N", "N+", "NONE"];
-      sentiments.forEach((sentiment) => {
-        analysis.sentence_list.forEach((sentence) => {
-          if (sentence.score_tag === sentiment) {
-            sentiment_response.sentiment_breakdown[sentiment] =
-              sentiment_response.sentiment_breakdown[sentiment] + 1;
-          }
-        });
-      });
+    // 2. get weather data by coordinate data from weatherbit
 
-      response.send(sentiment_response);
-    })
-    .catch((err) => response.send({ msg: "server error", err }));
+    // 3. get picture for user reqeust from pixabay.
+    const pixabay_raw = await fetch(
+      `${process.env.PIXABAY_API_URL}?q=${toponymName}&image_type=photo&editors_choice=true&key=${process.env.PIXABAY_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const pixabay_results = await pixabay_raw.json();
+    const { hits } = pixabay_results;
+    const primary_pixabay_hit = hits[0];
+
+    // 4. send custom response object back to user.
+    const custom_response_object = {
+      toponymName,
+      countryName,
+      // forecast,
+      cityImageURL: primary_pixabay_hit.webformatURL,
+    };
+
+    response.send(custom_response_object);
+  } catch (error) {
+    response.send({ msg: "server error", error });
+  }
 }
+
+// Geonames Api
+// https://www.geonames.org/export/JSON-webservices.html#citiesJSON
+
+// Pixabay API
+// https://pixabay.com/api/docs/#api_search_images
