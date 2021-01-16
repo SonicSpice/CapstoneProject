@@ -17,10 +17,7 @@ function onFormSubmit(event) {
 function handleSubmit(cityValue, departureValue) {
   spinner_ON(spinner, button);
 
-  console.log("currentDate", new Date());
-
   if (true) {
-    console.log("city", cityValue);
     var requestOptions = {
       method: "POST",
       body: JSON.stringify({
@@ -36,6 +33,31 @@ function handleSubmit(cityValue, departureValue) {
       .then((result) => {
         console.log(result);
         spinner_OFF(spinner, button);
+        const results_card = document.getElementById("results-card");
+        results_card.style.display = "flex";
+
+        const tripImage = document.getElementById("trip-image");
+        tripImage.setAttribute("src", result.tripImage);
+
+        const destination = document.getElementById("destination");
+        destination.innerHTML = `${result.toponymName}, ${result.countryName}`;
+
+        const departing = document.getElementById("departing");
+        departing.innerHTML = departureValue;
+
+        const countdown = document.getElementById("countdown");
+        countdown.innerHTML =
+          "Trip is " + result.tripWeather.countdownToDeparture + " days away.";
+
+        const temps = document.getElementById("weather-temps");
+        if (result.tripWeather.weatherbit_type === "current") {
+          temps.innerHTML = `Temp: ${result.tripWeather.temp}&#8457`;
+        } else {
+          temps.innerHTML = `High: ${result.tripWeather.high}&#8457, Low: ${result.tripWeather.low}&#8457`;
+        }
+
+        const desc = document.getElementById("weather-desc");
+        desc.innerHTML = result.tripWeather.desc;
       })
       .catch((error) => {
         console.log("error", error);

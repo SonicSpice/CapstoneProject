@@ -17,6 +17,12 @@ body {
   }
 }
 
+@media (max-width: 576px) {
+  #results-card {
+    flex-direction: column !important;
+  }
+}
+
 @media (min-width: 768px) {
   #form {
     label {
@@ -29,13 +35,30 @@ body {
   margin-top: 5%;
 }
 
-#sentiment-results {
+#results-card {
+  background-color: aquamarine;
   display: none;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 24px;
+  flex: 1;
 }
 
-#sentiment-chart {
-  margin-bottom: 25%;
-  margin-top: 5%;
+#trip-image {
+  height: 250px;
+  width: 250px;
+}
+
+#weather-temps {
+  margin-top: 16px;
+}
+
+#weather-temps-title {
+  margin-top: 32px;
+}
+
+.flex1 {
+  flex: 1;
 }
 
 #alert {

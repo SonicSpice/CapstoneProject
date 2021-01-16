@@ -18,7 +18,7 @@
     <header>
         <div class="container">
             <nav class="navbar navbar-dark bg-secondary navbar-expand-lg">
-                <a class="navbar-brand" href="#">Travel App</a>
+                <a class="navbar-brand" href="#">Travel Planner</a>
             </nav>
             <div class="alert alert-danger" role="alert" id="alert"></div>
         </div>
@@ -26,7 +26,22 @@
 
     <main>
         <div class="container">
+            <div class="jumbotron" id="results-card">
+                <div class="flex1">
+                    <img id="trip-image" />
+                </div>
 
+                <div class="flex1">
+                    <h3><u>My trip to:</u> <span id="destination"></span></h3>
+                    <h3><u>Departing:</u> <span id="departing"></span></h3>
+
+                    <h4 id="countdown"></h4>
+
+                    <h4 id="weather-temps-title">Typical weather for then is:</h4>
+                    <h5 id="weather-temps"></h5>
+                    <h5 id="weather-desc"></h5>
+                </div>
+            </div>
             <div class="jumbotron bg-light">
                 <form id="form">
                     <div class="form-group row">

@@ -53,10 +53,10 @@ async function getTripInfo(request, response) {
       today,
       weekFromToday
     );
+    const countdownToDeparture = moment(departureDate).diff(today, "days");
 
     // if TRUE, call weatherbit/current, else call weatherbit/forecast
     let weatherbit_results = null;
-    let weatherbit_type = "";
     let tripWeather = {};
 
     if (isDepartureWithinWeek) {
@@ -75,6 +75,7 @@ async function getTripInfo(request, response) {
         weatherbit_type: "current",
         temp: weatherbit_results.data[0].temp,
         desc: weatherbit_results.data[0].weather.description,
+        countdownToDeparture,
       };
     } else {
       // get forecast weather.
@@ -93,6 +94,7 @@ async function getTripInfo(request, response) {
         high: weatherbit_results.data[0].high_temp,
         low: weatherbit_results.data[0].low_temp,
         desc: weatherbit_results.data[0].weather.description,
+        countdownToDeparture,
       };
     }
 
