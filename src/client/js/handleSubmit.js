@@ -1,5 +1,6 @@
 import { spinner_OFF, spinner_ON } from "./handleSpinner";
-import { triggerAlert } from "./handleAlert";
+import { triggerAlert, closeAlert } from "./handleAlert";
+import { isDateFormatValid } from "./handleValidation";
 
 const form = document.getElementById("form");
 const alert = document.getElementById("alert");
@@ -17,7 +18,7 @@ function onFormSubmit(event) {
 function handleSubmit(cityValue, departureValue) {
   spinner_ON(spinner, button);
 
-  if (true) {
+  if (isDateFormatValid(departureValue)) {
     var requestOptions = {
       method: "POST",
       body: JSON.stringify({
@@ -33,6 +34,8 @@ function handleSubmit(cityValue, departureValue) {
       .then((result) => {
         console.log(result);
         spinner_OFF(spinner, button);
+        closeAlert(alert);
+
         const results_card = document.getElementById("results-card");
         results_card.style.display = "flex";
 
@@ -66,7 +69,7 @@ function handleSubmit(cityValue, departureValue) {
     // set an error alert when URL is not valid.
     triggerAlert(
       alert,
-      `ERROR: Invalid URL! Valid URLs begin with "http://" or "https://"`
+      `ERROR: Invalid date format. Format should be mm/dd/yyyy"`
     );
     spinner_OFF(spinner, button);
   }

@@ -3,4 +3,9 @@ function triggerAlert(alertElement, alertMessage) {
   alertElement.innerHTML = alertMessage;
 }
 
-export { triggerAlert };
+function closeAlert(alertElement, alertMessage) {
+  alertElement.style.display = "none";
+  alertElement.innerHTML = alertMessage;
+}
+
+export { triggerAlert, closeAlert };
