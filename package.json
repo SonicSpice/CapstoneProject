@@ -1,14 +1,14 @@
 {
-  "name": "example-project",
+  "name": "capstone-project",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "start": "concurrently --kill-others \"npm run backend-server\" \"npm run build-dev\"",
+    "start:prod": "npm run build-prod && npm run backend-server",
     "build-prod": "webpack --config webpack.prod.js",
     "build-dev": "webpack-dev-server --config webpack.dev.js --open",
-    "backend-server": "npx nodemon ./src/server/index.js",
-    "serve-prod": "npm run build-prod && concurrently --kill-others \"live-server --open=./dist/index.html\" \"npm run backend-server\""
+    "backend-server": "npx nodemon ./src/server/index.js"
   },
   "keywords": [],
   "author": "",
