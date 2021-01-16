@@ -17,11 +17,17 @@ function onFormSubmit(event) {
 function handleSubmit(cityValue, departureValue) {
   spinner_ON(spinner, button);
 
+  console.log("currentDate", new Date());
+
   if (true) {
     console.log("city", cityValue);
     var requestOptions = {
       method: "POST",
-      body: JSON.stringify({ city: cityValue }),
+      body: JSON.stringify({
+        city: cityValue,
+        departure: departureValue,
+        currentDate: new Date(),
+      }),
       headers: { "Content-Type": "application/json" },
     };
 

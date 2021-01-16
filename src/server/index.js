@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
+const moment = require("moment");
 
 dotenv.config();
 const app = express();
@@ -42,6 +43,58 @@ async function getTripInfo(request, response) {
     const { countryName, lat, lng, toponymName } = main_result;
 
     // 2. get weather data by coordinate data from weatherbit
+    // - first get departure date to determine which weatherbit endpoint to query.
+    const departureDate = request.body.departure;
+
+    // - to determine which endpoint from weatherbit to use, use moment to see if departure date is within a week.
+    const today = moment();
+    const weekFromToday = moment().add(1, "w"); // moment objects are mutable! use new moment objects when manipulating dates.
+    const isDepartureWithinWeek = moment(departureDate).isBetween(
+      today,
+      weekFromToday
+    );
+
+    // if TRUE, call weatherbit/current, else call weatherbit/forecast
+    let weatherbit_results = null;
+    let weatherbit_type = "";
+    let tripWeather = {};
+
+    if (isDepartureWithinWeek) {
+      // get current weather
+      const weatherbit_raw = await fetch(
+        `${process.env.WEATHERBIT_CURRENT_API_URL}?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&units=I`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      weatherbit_results = await weatherbit_raw.json();
+      tripWeather = {
+        weatherbit_type: "current",
+        temp: weatherbit_results.data[0].temp,
+        desc: weatherbit_results.data[0].weather.description,
+      };
+    } else {
+      // get forecast weather.
+      const weatherbit_raw = await fetch(
+        `${process.env.WEATHERBIT_FORECAST_API_URL}?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&days=1&units=I`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      weatherbit_results = await weatherbit_raw.json();
+      tripWeather = {
+        weatherbit_type: "forecast",
+        high: weatherbit_results.data[0].high_temp,
+        low: weatherbit_results.data[0].low_temp,
+        desc: weatherbit_results.data[0].weather.description,
+      };
+    }
 
     // 3. get picture for user reqeust from pixabay.
     const pixabay_raw = await fetch(
@@ -85,8 +138,8 @@ async function getTripInfo(request, response) {
     const custom_response_object = {
       toponymName,
       countryName,
-      // forecast,
       tripImage: pixabay_image_result.webformatURL,
+      tripWeather,
     };
 
     response.send(custom_response_object);
@@ -98,6 +151,14 @@ async function getTripInfo(request, response) {
 
 // Geonames Api
 // https://www.geonames.org/export/JSON-webservices.html#citiesJSON
+
+// Weatherbit.io Api
+// Current Weather
+// http://api.weatherbit.io/v2.0/current
+
+//Weatherbit.io Api
+//Forecast Weather
+//http://api.weatherbit.io/v2.0/forecast/daily
 
 // Pixabay API
 // https://pixabay.com/api/docs/#api_search_images
