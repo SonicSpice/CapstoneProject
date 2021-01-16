@@ -1,13 +1,14 @@
-import { isURLValid } from "../src/client/js/formValidation";
+import { isDateFormatValid } from "../src/client/js/handleValidation";
 
 describe("Testing the URL validation functionality", () => {
-  test("isURLValid returns true when a valid URL is given", () => {
-    const test_URL = "http://google.com";
-    expect(isURLValid(test_URL)).toBe(true);
+  test("isDateFormatValid is valid on mm/dd/yyyy", () => {
+    const test_date = "01/30/2021";
+    expect(isDateFormatValid(test_date)).toBe(true);
   });
 
-  test("isURLValid returns false when an invalid URL is given", () => {
-    const test_URL = "httgoogle.com";
-    expect(isURLValid(test_URL)).toBe(false);
+  test("isDateFormatValid is invalid on formats NOT mm/dd/yyyy", () => {
+    expect(isDateFormatValid("01-30-2021")).toBe(false);
+    expect(isDateFormatValid("01-30-adfaf")).toBe(false);
+    expect(isDateFormatValid("")).toBe(false);
   });
 });
