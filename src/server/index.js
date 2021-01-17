@@ -62,7 +62,7 @@ async function getTripInfo(request, response) {
     if (isDepartureWithinWeek) {
       // get current weather
       const weatherbit_raw = await fetch(
-        `${process.env.WEATHERBIT_CURRENT_API_URL}?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&units=I`,
+        `http://api.weatherbit.io/v2.0/current?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&units=I`,
         {
           method: "GET",
           headers: {
@@ -80,7 +80,7 @@ async function getTripInfo(request, response) {
     } else {
       // get forecast weather.
       const weatherbit_raw = await fetch(
-        `${process.env.WEATHERBIT_FORECAST_API_URL}?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&days=1&units=I`,
+        `http://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&days=1&units=I`,
         {
           method: "GET",
           headers: {
