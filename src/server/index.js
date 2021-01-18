@@ -13,15 +13,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("dist"));
 
+const SERVER_PORT = "5500";
+const GEONAMES_API_URL = "http://api.geonames.org/searchJSON";
+const GEONAMES_USERID = "lad10";
+const WEATHERBIT_CURRENT_API_URL = "http://api.weatherbit.io/v2.0/current";
+const WEATHERBIT_FORECAST_API_URL =
+  "http://api.weatherbit.io/v2.0/forecast/daily";
+const WEATHERBIT_IO_API_KEY = "2176effaa2614c71a1c5134cddcf37e3";
+const PIXABAY_API_URL = "https://pixabay.com/api/";
+const PIXABAY_API_KEY = "19062087-a01bb9d192170f40576d3751b";
+
 app.get("/", function (req, res) {
   res.sendFile(path.resolve("dist/index.html"));
 });
 
 // designates what port the app will listen to for incoming requests
-app.listen(process.env.SERVER_PORT, function () {
-  console.log(
-    `Shawn's Travel App server is listening on port ${process.env.SERVER_PORT}!`
-  );
+app.listen(SERVER_PORT, function () {
+  console.log(`Shawn's Travel App server is listening on port ${SERVER_PORT}!`);
 });
 
 app.post("/trip-info-lookup", getTripInfo);
@@ -29,7 +37,7 @@ async function getTripInfo(request, response) {
   try {
     // 1. get coordinate data for user request from geonames
     const geonames_raw = await fetch(
-      `${process.env.GEONAMES_API_URL}?q=${request.body.city}&maxRows=1&username=${process.env.GEONAMES_USERID}`,
+      `${GEONAMES_API_URL}?q=${request.body.city}&maxRows=1&username=${GEONAMES_USERID}`,
       {
         method: "POST",
         headers: {
@@ -62,7 +70,7 @@ async function getTripInfo(request, response) {
     if (isDepartureWithinWeek) {
       // get current weather
       const weatherbit_raw = await fetch(
-        `http://api.weatherbit.io/v2.0/current?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&units=I`,
+        `http://api.weatherbit.io/v2.0/current?key=${WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&units=I`,
         {
           method: "GET",
           headers: {
@@ -80,7 +88,7 @@ async function getTripInfo(request, response) {
     } else {
       // get forecast weather.
       const weatherbit_raw = await fetch(
-        `http://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&days=1&units=I`,
+        `http://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHERBIT_IO_API_KEY}&lat=${lat}&lon=${lng}&days=1&units=I`,
         {
           method: "GET",
           headers: {
@@ -100,7 +108,7 @@ async function getTripInfo(request, response) {
 
     // 3. get picture for user reqeust from pixabay.
     const pixabay_raw = await fetch(
-      `${process.env.PIXABAY_API_URL}?q=${toponymName}&image_type=photo&editors_choice=true&key=${process.env.PIXABAY_API_KEY}`,
+      `${PIXABAY_API_URL}?q=${toponymName}&image_type=photo&editors_choice=true&key=${PIXABAY_API_KEY}`,
       {
         method: "POST",
         headers: {
@@ -117,7 +125,7 @@ async function getTripInfo(request, response) {
     if (totalHits === 0) {
       try {
         const pixabay_raw_countryName = await fetch(
-          `${process.env.PIXABAY_API_URL}?q=${countryName}&image_type=photo&editors_choice=true&key=${process.env.PIXABAY_API_KEY}`,
+          `${PIXABAY_API_URL}?q=${countryName}&image_type=photo&editors_choice=true&key=${PIXABAY_API_KEY}`,
           {
             method: "POST",
             headers: {
